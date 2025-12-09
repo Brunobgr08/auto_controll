@@ -21,10 +21,10 @@
 
 #### Issue #2: Configuração do servidor Express e rotas base
 
-- [ ] Criar servidor Express básico
-- [ ] Configurar middleware (JSON parsing, CORS, etc.)
-- [ ] Criar rotas de health check
-- [ ] Configurar tratamento de erros básico
+- [x] Criar servidor Express básico
+- [x] Configurar middleware (JSON parsing, CORS, etc.)
+- [x] Criar rotas de health check
+- [x] Configurar tratamento de erros básico
 
 ### Fase 2: Módulo de Automóveis
 
