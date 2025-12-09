@@ -30,9 +30,9 @@
 
 #### Issue #3: Modelo e repositório de Automóveis
 
-- [ ] Definir estrutura do modelo Automóvel
-- [ ] Implementar repositório em memória para CRUD
-- [ ] Implementar filtros (cor, marca)
+- [x] Definir estrutura do modelo Automóvel
+- [x] Implementar repositório em memória para CRUD
+- [x] Implementar filtros (cor, marca)
 
 #### Issue #4: Controllers e rotas de Automóveis
 
