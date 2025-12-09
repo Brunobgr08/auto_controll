@@ -77,9 +77,9 @@
 
 #### Issue #10: Controllers e rotas de Utilizações
 
-- [ ] Criar controllers para operações de utilização
-- [ ] Implementar validações e regras de negócio
-- [ ] Criar rotas para iniciar, finalizar e listar utilizações
+- [x] Criar controllers para operações de utilização
+- [x] Implementar validações e regras de negócio
+- [x] Criar rotas para iniciar, finalizar e listar utilizações
 
 #### Issue #11: Testes unitários para Utilizações
 

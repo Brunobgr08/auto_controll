@@ -14,6 +14,6 @@ router.get('/health', (req, res) => {
 // Rotas específicas para cada recurso
 router.use('/automoveis', require('./automoveis'));
 router.use('/motoristas', require('./motoristas'));
-// router.use('/utilizacoes', require('./utilizacoes'));
+router.use('/utilizacoes', require('./utilizacoes'));
 
 module.exports = router;
