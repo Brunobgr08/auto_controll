@@ -36,10 +36,10 @@
 
 #### Issue #4: Controllers e rotas de Automóveis
 
-- [ ] Criar controllers para operações CRUD
-- [ ] Implementar validação de dados de entrada
-- [ ] Criar rotas RESTful para automóveis
-- [ ] Implementar tratamento de erros específicos
+- [x] Criar controllers para operações CRUD
+- [x] Implementar validação de dados de entrada
+- [x] Criar rotas RESTful para automóveis
+- [x] Implementar tratamento de erros específicos
 
 #### Issue #5: Testes unitários para Automóveis
 
