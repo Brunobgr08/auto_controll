@@ -1,4 +1,5 @@
 const automovelRepository = require('../repositories/AutomovelRepository');
+const utilizacaoRepository = require('../repositories/UtilizacaoRepository');
 const { AppError } = require('../middlewares/errorHandler');
 
 class AutomovelService {
@@ -54,6 +55,27 @@ class AutomovelService {
 
   // Excluir automóvel
   async excluir(id) {
+    // Verificar se automóvel existe
+    const automovelExistente = automovelRepository.buscarPorId(id);
+    if (!automovelExistente) {
+      throw new AppError('Automóvel não encontrado', 404);
+    }
+
+    // Verificar se automóvel está em uso
+    const automovelEmUso = utilizacaoRepository.automovelEstaEmUso(id);
+    if (automovelEmUso) {
+      throw new AppError('Não é possível excluir automóvel em uso', 409);
+    }
+
+    // Verificar se há utilizações históricas
+    const utilizacoesHistorico = utilizacaoRepository.buscarPorAutomovel(id);
+    if (utilizacoesHistorico.length > 0) {
+      throw new AppError(
+        'Não é possível excluir automóvel com histórico de utilizações. Considere desativar em vez de excluir.',
+        409
+      );
+    }
+
     const excluido = automovelRepository.excluir(id);
 
     if (!excluido) {

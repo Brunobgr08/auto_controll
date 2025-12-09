@@ -3,6 +3,10 @@ const router = express.Router();
 const utilizacaoController = require('../controllers/UtilizacaoController');
 const validationHandler = require('../middlewares/validationHandler');
 const {
+  validateAutomovelExists,
+  validateMotoristaExists,
+} = require('../middlewares/existsValidation');
+const {
   criarUtilizacaoValidation,
   finalizarUtilizacaoValidation,
   idValidation,
@@ -48,11 +52,13 @@ router.delete(
 // Rotas de verificação
 router.get(
   '/automovel/:automovelId/em-uso',
+  validateAutomovelExists,
   utilizacaoController.verificarAutomovelEmUso
 );
 
 router.get(
   '/motorista/:motoristaId/em-uso',
+  validateMotoristaExists,
   utilizacaoController.verificarMotoristaEmUso
 );
 

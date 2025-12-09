@@ -103,6 +103,20 @@ class UtilizacaoService {
 
   // Excluir utilização
   async excluir(id) {
+    // Verificar se a utilização existe
+    const utilizacao = this.utilizacaoRepo.buscarPorId(id);
+    if (!utilizacao) {
+      throw new AppError('Utilização não encontrada', 404);
+    }
+
+    // Verificar se a utilização está ativa
+    if (!utilizacao.dataTermino) {
+      throw new AppError(
+        'Não é possível excluir uma utilização ativa. Finalize-a primeiro.',
+        409
+      );
+    }
+
     const excluido = this.utilizacaoRepo.excluir(id);
 
     if (!excluido) {

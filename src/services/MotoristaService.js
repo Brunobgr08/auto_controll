@@ -1,4 +1,5 @@
 const motoristaRepository = require('../repositories/MotoristaRepository');
+const utilizacaoRepository = require('../repositories/UtilizacaoRepository');
 const { AppError } = require('../middlewares/errorHandler');
 
 class MotoristaService {
@@ -54,8 +55,26 @@ class MotoristaService {
 
   // Excluir motorista
   async excluir(id) {
-    // TODO: Verificar se motorista está em utilização antes de excluir
-    // (será implementado na Issue #12)
+    // Verificar se motorista existe
+    const motoristaExistente = motoristaRepository.buscarPorId(id);
+    if (!motoristaExistente) {
+      throw new AppError('Motorista não encontrado', 404);
+    }
+
+    // Verificar se motorista está em uso
+    const motoristaEmUso = utilizacaoRepository.motoristaEstaEmUso(id);
+    if (motoristaEmUso) {
+      throw new AppError('Não é possível excluir motorista em uso', 409);
+    }
+
+    // Verificar se há utilizações históricas
+    const utilizacoesHistorico = utilizacaoRepository.buscarPorMotorista(id);
+    if (utilizacoesHistorico.length > 0) {
+      throw new AppError(
+        'Não é possível excluir motorista com histórico de utilizações. Considere desativar em vez de excluir.',
+        409
+      );
+    }
 
     const excluido = motoristaRepository.excluir(id);
 

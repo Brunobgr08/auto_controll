@@ -91,9 +91,9 @@
 
 #### Issue #12: Validações de integridade referencial
 
-- [ ] Validar existência de motorista/automóvel ao criar utilização
-- [ ] Implementar verificação de dependências ao excluir registros
-- [ ] Tratar todos os cenários de erro possíveis
+- [x] Validar existência de motorista/automóvel ao criar utilização
+- [x] Implementar verificação de dependências ao excluir registros
+- [x] Tratar todos os cenários de erro possíveis
 
 #### Issue #13: Testes de integração
 
