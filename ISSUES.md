@@ -51,9 +51,9 @@
 
 #### Issue #6: Modelo e repositório de Motoristas
 
-- [ ] Definir estrutura do modelo Motorista
-- [ ] Implementar repositório em memória para CRUD
-- [ ] Implementar filtro por nome
+- [x] Definir estrutura do modelo Motorista
+- [x] Implementar repositório em memória para CRUD
+- [x] Implementar filtro por nome
 
 #### Issue #7: Controllers e rotas de Motoristas
 
