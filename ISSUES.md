@@ -1,0 +1,135 @@
+# Plano de Desenvolvimento - Sistema de Controle de Utilização de Automóveis
+
+## Arquitetura Sugerida
+
+- **Backend**: Node.js + Express.js
+- **Persistência**: Inicialmente em memória (arrays/objetos) com migração futura para banco de dados
+- **Testes**: Jest + Supertest
+- **Validação**: express-validator
+
+## Cronograma e Lista de Issues
+
+### Fase 1: Setup do Projeto e Infraestrutura Base
+
+#### Issue #1: Configuração inicial do projeto
+
+- [x] Inicializar projeto Node.js
+- [x] Instalar dependências básicas (Express, Jest, etc.)
+- [x] Configurar estrutura de pastas
+- [x] Configurar script de execução e testes
+- [x] Configurar ESLint/Prettier para padronização
+
+#### Issue #2: Configuração do servidor Express e rotas base
+
+- [ ] Criar servidor Express básico
+- [ ] Configurar middleware (JSON parsing, CORS, etc.)
+- [ ] Criar rotas de health check
+- [ ] Configurar tratamento de erros básico
+
+### Fase 2: Módulo de Automóveis
+
+#### Issue #3: Modelo e repositório de Automóveis
+
+- [ ] Definir estrutura do modelo Automóvel
+- [ ] Implementar repositório em memória para CRUD
+- [ ] Implementar filtros (cor, marca)
+
+#### Issue #4: Controllers e rotas de Automóveis
+
+- [ ] Criar controllers para operações CRUD
+- [ ] Implementar validação de dados de entrada
+- [ ] Criar rotas RESTful para automóveis
+- [ ] Implementar tratamento de erros específicos
+
+#### Issue #5: Testes unitários para Automóveis
+
+- [ ] Testar repositório de automóveis
+- [ ] Testar controllers de automóveis
+- [ ] Testar validações e casos de erro
+
+### Fase 3: Módulo de Motoristas
+
+#### Issue #6: Modelo e repositório de Motoristas
+
+- [ ] Definir estrutura do modelo Motorista
+- [ ] Implementar repositório em memória para CRUD
+- [ ] Implementar filtro por nome
+
+#### Issue #7: Controllers e rotas de Motoristas
+
+- [ ] Criar controllers para operações CRUD
+- [ ] Implementar validação de dados de entrada
+- [ ] Criar rotas RESTful para motoristas
+
+#### Issue #8: Testes unitários para Motoristas
+
+- [ ] Testar repositório de motoristas
+- [ ] Testar controllers de motoristas
+
+### Fase 4: Módulo de Utilização de Automóveis
+
+#### Issue #9: Modelo e repositório de Utilizações
+
+- [ ] Definir estrutura do modelo Utilização
+- [ ] Implementar repositório em memória
+- [ ] Implementar regras de negócio (veículo/motorista não podem estar em uso simultaneamente)
+
+#### Issue #10: Controllers e rotas de Utilizações
+
+- [ ] Criar controllers para operações de utilização
+- [ ] Implementar validações e regras de negócio
+- [ ] Criar rotas para iniciar, finalizar e listar utilizações
+
+#### Issue #11: Testes unitários para Utilizações
+
+- [ ] Testar regras de negócio
+- [ ] Testar casos de uso simultâneo
+- [ ] Testar controllers de utilização
+
+### Fase 5: Integração e Validações
+
+#### Issue #12: Validações de integridade referencial
+
+- [ ] Validar existência de motorista/automóvel ao criar utilização
+- [ ] Implementar verificação de dependências ao excluir registros
+- [ ] Tratar todos os cenários de erro possíveis
+
+#### Issue #13: Testes de integração
+
+- [ ] Testar fluxos completos de uso
+- [ ] Testar cenários de erro de integração
+- [ ] Testar filtros combinados
+
+### Fase 6: Documentação e Finalização
+
+#### Issue #14: Documentação e instruções
+
+- [ ] Criar README com instruções de execução
+- [ ] Documentar endpoints da API
+- [ ] Criar exemplos de uso
+- [ ] Adicionar scripts auxiliares
+
+#### Issue #15: Refatoração e otimização
+
+- [ ] Revisar código e padrões
+- [ ] Otimizar consultas e filtros
+- [ ] Melhorar tratamento de erros
+
+## Estrutura de Pastas
+
+```
+src/
+├── controllers/
+├── models/
+├── repositories/
+├── routes/
+├── middlewares/
+├── services/
+├── validations/
+tests/
+├── unit/
+│   ├── models/
+│   ├── repositories/
+├── integration/
+scripts/
+```
