@@ -43,9 +43,9 @@
 
 #### Issue #5: Testes unitários para Automóveis
 
-- [ ] Testar repositório de automóveis
-- [ ] Testar controllers de automóveis
-- [ ] Testar validações e casos de erro
+- [x] Testar repositório de automóveis
+- [x] Testar controllers de automóveis
+- [x] Testar validações e casos de erro
 
 ### Fase 3: Módulo de Motoristas
 
