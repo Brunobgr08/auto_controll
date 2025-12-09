@@ -63,8 +63,9 @@
 
 #### Issue #8: Testes unitários para Motoristas
 
-- [ ] Testar repositório de motoristas
-- [ ] Testar controllers de motoristas
+- [x] Testar repositório de motoristas
+- [x] Testar controllers de motoristas
+- [x] Testar validações e casos de erro
 
 ### Fase 4: Módulo de Utilização de Automóveis
 
