@@ -71,9 +71,9 @@
 
 #### Issue #9: Modelo e repositório de Utilizações
 
-- [ ] Definir estrutura do modelo Utilização
-- [ ] Implementar repositório em memória
-- [ ] Implementar regras de negócio (veículo/motorista não podem estar em uso simultaneamente)
+- [x] Definir estrutura do modelo Utilização
+- [x] Implementar repositório em memória
+- [x] Implementar regras de negócio (veículo/motorista não podem estar em uso simultaneamente)
 
 #### Issue #10: Controllers e rotas de Utilizações
 
