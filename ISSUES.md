@@ -57,9 +57,9 @@
 
 #### Issue #7: Controllers e rotas de Motoristas
 
-- [ ] Criar controllers para operações CRUD
-- [ ] Implementar validação de dados de entrada
-- [ ] Criar rotas RESTful para motoristas
+- [x] Criar controllers para operações CRUD
+- [x] Implementar validação de dados de entrada
+- [x] Criar rotas RESTful para motoristas
 
 #### Issue #8: Testes unitários para Motoristas
 
