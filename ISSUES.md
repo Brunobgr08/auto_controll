@@ -83,9 +83,9 @@
 
 #### Issue #11: Testes unitários para Utilizações
 
-- [ ] Testar regras de negócio
-- [ ] Testar casos de uso simultâneo
-- [ ] Testar controllers de utilização
+- [x] Testar regras de negócio
+- [x] Testar casos de uso simultâneo
+- [x] Testar controllers de utilização
 
 ### Fase 5: Integração e Validações
 
