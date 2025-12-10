@@ -1,7 +1,20 @@
 const express = require('express');
 const router = express.Router();
 
-// Health check route
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Verificar saúde da API
+ *     tags: [Saúde]
+ *     responses:
+ *       200:
+ *         description: API funcionando corretamente
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Health'
+ */
 router.get('/health', (req, res) => {
   res.json({
     status: 'OK',

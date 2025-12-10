@@ -105,10 +105,10 @@
 
 #### Issue #14: Documentação e instruções
 
-- [ ] Criar README com instruções de execução
-- [ ] Documentar endpoints da API
-- [ ] Criar exemplos de uso
-- [ ] Adicionar scripts auxiliares
+- [x] Criar README com instruções de execução
+- [x] Documentar endpoints da API
+- [x] Criar exemplos de uso
+- [x] Adicionar scripts auxiliares
 
 #### Issue #15: Refatoração e otimização
 
@@ -133,4 +133,5 @@ tests/
 │   ├── repositories/
 ├── integration/
 scripts/
+docs/
 ```

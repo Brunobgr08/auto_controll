@@ -7,6 +7,7 @@ const errorHandler = require('../middlewares/errorHandler');
 const notFoundHandler = require('../middlewares/notFoundHandler');
 
 const routes = require('../routes');
+const { swaggerUi, specs } = require('../swagger');
 
 const configureServer = () => {
   const app = express();
@@ -21,6 +22,9 @@ const configureServer = () => {
   if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
   }
+
+  // Swagger Documentation
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
   // API Routes
   app.use('/api', routes);

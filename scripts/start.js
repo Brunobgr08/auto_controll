@@ -1,20 +1,30 @@
-const app = require('../src/server');
-const logger = require('../src/utils/logger');
+const { spawn } = require('child_process');
+const path = require('path');
 
-const PORT = process.env.PORT || 3000;
+// Caminho para o arquivo src/server.js
+const serverPath = path.join(__dirname, '..', 'src', 'server.js');
 
-// Tratamento de erros não capturados
-process.on('uncaughtException', (error) => {
-  logger.error('Exceção não capturada:', error);
+// Executar src/server.js como processo principal
+const serverProcess = spawn('node', [serverPath], {
+  stdio: 'inherit',
+  env: process.env,
+});
+
+// Tratamento de erros do processo
+serverProcess.on('error', (error) => {
+  console.error('[ERROR] Falha ao iniciar o servidor:', error.message);
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.error('Rejeição não tratada:', { reason, promise });
-  process.exit(1);
+serverProcess.on('exit', (code) => {
+  process.exit(code);
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  logger.info(`Servidor iniciado na porta ${PORT}`);
+// Encerrar o processo filho quando o pai for encerrado
+process.on('SIGINT', () => {
+  serverProcess.kill('SIGINT');
+});
+
+process.on('SIGTERM', () => {
+  serverProcess.kill('SIGTERM');
 });
