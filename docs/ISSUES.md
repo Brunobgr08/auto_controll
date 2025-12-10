@@ -112,9 +112,9 @@
 
 #### Issue #15: Refatoração e otimização
 
-- [ ] Revisar código e padrões
-- [ ] Otimizar consultas e filtros
-- [ ] Melhorar tratamento de erros
+- [x] Revisar código e padrões
+- [x] Otimizar consultas e filtros
+- [x] Melhorar tratamento de erros
 
 ## Estrutura de Pastas
 

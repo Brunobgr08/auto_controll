@@ -1,13 +1,13 @@
 const { body, param, query } = require('express-validator');
+const { VALIDATION, LIMITS } = require('../constants/app');
 
-// Validações para criação de utilização
 const criarUtilizacaoValidation = [
   body('automovelId')
     .notEmpty()
     .withMessage('ID do automóvel é obrigatório')
     .isString()
     .withMessage('ID do automóvel deve ser uma string')
-    .matches(/^\d+$/)
+    .matches(VALIDATION.ID_REGEX)
     .withMessage('ID do automóvel deve conter apenas números'),
 
   body('motoristaId')
@@ -15,7 +15,7 @@ const criarUtilizacaoValidation = [
     .withMessage('ID do motorista é obrigatório')
     .isString()
     .withMessage('ID do motorista deve ser uma string')
-    .matches(/^\d+$/)
+    .matches(VALIDATION.ID_REGEX)
     .withMessage('ID do motorista deve conter apenas números'),
 
   body('motivo')
@@ -24,8 +24,10 @@ const criarUtilizacaoValidation = [
     .isString()
     .withMessage('Motivo deve ser uma string')
     .trim()
-    .isLength({ min: 5, max: 500 })
-    .withMessage('Motivo deve ter entre 5 e 500 caracteres'),
+    .isLength({ min: LIMITS.MOTIVO_MIN, max: LIMITS.MOTIVO_MAX })
+    .withMessage(
+      `Motivo deve ter entre ${LIMITS.MOTIVO_MIN} e ${LIMITS.MOTIVO_MAX} caracteres`
+    ),
 
   body('dataInicio')
     .optional()
@@ -33,14 +35,13 @@ const criarUtilizacaoValidation = [
     .withMessage('Data de início deve estar no formato ISO 8601'),
 ];
 
-// Validações para finalização de utilização
 const finalizarUtilizacaoValidation = [
   param('id')
     .notEmpty()
     .withMessage('ID é obrigatório')
     .isString()
     .withMessage('ID deve ser uma string')
-    .matches(/^\d+$/)
+    .matches(VALIDATION.ID_REGEX)
     .withMessage('ID deve conter apenas números'),
 
   body('dataTermino')
@@ -49,18 +50,16 @@ const finalizarUtilizacaoValidation = [
     .withMessage('Data de término deve estar no formato ISO 8601'),
 ];
 
-// Validações para ID
 const idValidation = [
   param('id')
     .notEmpty()
     .withMessage('ID é obrigatório')
     .isString()
     .withMessage('ID deve ser uma string')
-    .matches(/^\d+$/)
+    .matches(VALIDATION.ID_REGEX)
     .withMessage('ID deve conter apenas números'),
 ];
 
-// Validações para listagem com filtros
 const listarUtilizacoesValidation = [
   query('ativa')
     .optional()

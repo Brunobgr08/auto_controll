@@ -3,7 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-const errorHandler = require('../middlewares/errorHandler');
+const { errorHandler } = require('../middlewares/errorHandler');
 const notFoundHandler = require('../middlewares/notFoundHandler');
 
 const routes = require('../routes');

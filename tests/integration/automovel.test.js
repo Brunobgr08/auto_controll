@@ -212,7 +212,7 @@ describe('API de Automóveis', () => {
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty(
         'message',
-        'Já existe outro automóvel com esta placa'
+        'Já existe um automóvel com esta placa'
       );
     });
   });

@@ -49,7 +49,7 @@ describe('Validações de Integridade Referencial', () => {
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty(
         'message',
-        'Não é possível excluir automóvel em uso'
+        'Automóvel já está em uso'
       );
     });
 
@@ -126,7 +126,7 @@ describe('Validações de Integridade Referencial', () => {
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty(
         'message',
-        'Não é possível excluir motorista em uso'
+        'Motorista já está utilizando outro automóvel'
       );
     });
 

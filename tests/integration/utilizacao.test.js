@@ -128,7 +128,7 @@ describe('API de Utilizações', () => {
         `/api/utilizacoes/${utilizacao.body.id}/finalizar`
       );
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(409);
       expect(response.body).toHaveProperty(
         'message',
         'Utilização já foi finalizada'

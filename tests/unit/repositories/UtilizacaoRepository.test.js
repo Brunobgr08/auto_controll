@@ -261,7 +261,7 @@ describe('Repositório de Utilizações', () => {
 
   describe('automovelEstaEmUso', () => {
     it('deve retornar utilização ativa para automóvel em uso', () => {
-      const utilizacao = UtilizacaoRepository.criar({
+      UtilizacaoRepository.criar({
         automovelId: '1',
         motoristaId: '1',
         motivo: 'Viagem a negócios',
@@ -280,7 +280,7 @@ describe('Repositório de Utilizações', () => {
     });
 
     it('deve retornar null para automóvel com utilização finalizada', () => {
-      const utilizacao = UtilizacaoRepository.criar({
+      UtilizacaoRepository.criar({
         automovelId: '1',
         motoristaId: '1',
         motivo: 'Viagem a negócios',
@@ -294,7 +294,7 @@ describe('Repositório de Utilizações', () => {
 
   describe('motoristaEstaEmUso', () => {
     it('deve retornar utilização ativa para motorista em uso', () => {
-      const utilizacao = UtilizacaoRepository.criar({
+      UtilizacaoRepository.criar({
         automovelId: '1',
         motoristaId: '1',
         motivo: 'Viagem a negócios',

@@ -1,49 +1,45 @@
 const automovelRepository = require('../repositories/AutomovelRepository');
 const utilizacaoRepository = require('../repositories/UtilizacaoRepository');
-const { AppError } = require('../middlewares/errorHandler');
+const { NotFoundError, ConflictError } = require('../middlewares/errorHandler');
+const { MESSAGES } = require('../constants/app');
 
 class AutomovelService {
-  // Criar automóvel
   async criar(automovelData) {
-    // Verificar se placa já existe
     if (automovelRepository.placaExiste(automovelData.placa)) {
-      throw new AppError('Já existe um automóvel com esta placa', 409);
+      throw new ConflictError(MESSAGES.CONFLICT.PLACA_DUPLICADA);
     }
 
     const automovel = automovelRepository.criar(automovelData);
     return automovel;
   }
 
-  // Buscar automóvel por ID
   async buscarPorId(id) {
     const automovel = automovelRepository.buscarPorId(id);
 
     if (!automovel) {
-      throw new AppError('Automóvel não encontrado', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.AUTOMOVEL, { id });
     }
 
     return automovel;
   }
 
-  // Listar automóveis
   async listar(filtros = {}) {
     return automovelRepository.listar(filtros);
   }
 
-  // Atualizar automóvel
   async atualizar(id, dadosAtualizacao) {
-    // Verificar se automóvel existe
     const automovelExistente = automovelRepository.buscarPorId(id);
     if (!automovelExistente) {
-      throw new AppError('Automóvel não encontrado', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.AUTOMOVEL, { id });
     }
 
-    // Se estiver atualizando a placa, verificar se não conflita
     if (
       dadosAtualizacao.placa &&
       automovelRepository.placaExiste(dadosAtualizacao.placa, id)
     ) {
-      throw new AppError('Já existe outro automóvel com esta placa', 409);
+      throw new ConflictError(MESSAGES.CONFLICT.PLACA_DUPLICADA, {
+        placa: dadosAtualizacao.placa,
+      });
     }
 
     const automovelAtualizado = automovelRepository.atualizar(
@@ -53,36 +49,36 @@ class AutomovelService {
     return automovelAtualizado;
   }
 
-  // Excluir automóvel
   async excluir(id) {
-    // Verificar se automóvel existe
     const automovelExistente = automovelRepository.buscarPorId(id);
     if (!automovelExistente) {
-      throw new AppError('Automóvel não encontrado', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.AUTOMOVEL, { id });
     }
 
-    // Verificar se automóvel está em uso
     const automovelEmUso = utilizacaoRepository.automovelEstaEmUso(id);
     if (automovelEmUso) {
-      throw new AppError('Não é possível excluir automóvel em uso', 409);
+      throw new ConflictError(MESSAGES.CONFLICT.AUTOMOVEL_EM_USO, {
+        utilizacaoId: automovelEmUso.id,
+      });
     }
 
-    // Verificar se há utilizações históricas
     const utilizacoesHistorico = utilizacaoRepository.buscarPorAutomovel(id);
     if (utilizacoesHistorico.length > 0) {
-      throw new AppError(
-        'Não é possível excluir automóvel com histórico de utilizações. Considere desativar em vez de excluir.',
-        409
-      );
+      throw new ConflictError(MESSAGES.CONFLICT.AUTOMOVEL_COM_HISTORICO, {
+        quantidadeUtilizacoes: utilizacoesHistorico.length,
+      });
     }
 
     const excluido = automovelRepository.excluir(id);
 
     if (!excluido) {
-      throw new AppError('Automóvel não encontrado', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.AUTOMOVEL, { id });
     }
 
-    return { message: 'Automóvel excluído com sucesso' };
+    return {
+      message: 'Automóvel excluído com sucesso',
+      id,
+    };
   }
 }
 

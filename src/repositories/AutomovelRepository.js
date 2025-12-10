@@ -2,17 +2,15 @@ const Automovel = require('../models/Automovel');
 
 class AutomovelRepository {
   constructor() {
-    // Banco de dados em memória
     this.automoveis = new Map();
     this.nextId = 1;
+    this.placaIndex = new Map(); // Índice para busca rápida por placa
   }
 
-  // Gerar ID único
   generateId() {
     return (this.nextId++).toString();
   }
 
-  // Criar um novo automóvel
   criar(automovelData) {
     const id = this.generateId();
     const automovel = new Automovel({
@@ -21,38 +19,35 @@ class AutomovelRepository {
     });
 
     this.automoveis.set(id, automovel);
+    this.placaIndex.set(automovel.placa.toLowerCase(), id);
     return automovel.toJSON();
   }
 
-  // Buscar automóvel por ID
   buscarPorId(id) {
     const automovel = this.automoveis.get(id);
     return automovel ? automovel.toJSON() : null;
   }
 
-  // Listar todos os automóveis
   listar(filtros = {}) {
     let automoveisArray = Array.from(this.automoveis.values()).map((auto) =>
       auto.toJSON()
     );
 
-    // Aplicar filtros
-    if (filtros.cor) {
-      automoveisArray = automoveisArray.filter(
-        (auto) => auto.cor.toLowerCase() === filtros.cor.toLowerCase()
-      );
-    }
-
-    if (filtros.marca) {
-      automoveisArray = automoveisArray.filter(
-        (auto) => auto.marca.toLowerCase() === filtros.marca.toLowerCase()
-      );
+    // Aplicar filtros de forma mais eficiente
+    if (filtros.cor || filtros.marca) {
+      automoveisArray = automoveisArray.filter((auto) => {
+        const corMatch =
+          !filtros.cor || auto.cor.toLowerCase() === filtros.cor.toLowerCase();
+        const marcaMatch =
+          !filtros.marca ||
+          auto.marca.toLowerCase() === filtros.marca.toLowerCase();
+        return corMatch && marcaMatch;
+      });
     }
 
     return automoveisArray;
   }
 
-  // Atualizar automóvel
   atualizar(id, dadosAtualizacao) {
     const automovel = this.automoveis.get(id);
 
@@ -60,11 +55,16 @@ class AutomovelRepository {
       return null;
     }
 
+    // Atualizar índice de placa se necessário
+    if (dadosAtualizacao.placa && dadosAtualizacao.placa !== automovel.placa) {
+      this.placaIndex.delete(automovel.placa.toLowerCase());
+      this.placaIndex.set(dadosAtualizacao.placa.toLowerCase(), id);
+    }
+
     automovel.update(dadosAtualizacao);
     return automovel.toJSON();
   }
 
-  // Excluir automóvel
   excluir(id) {
     const automovel = this.automoveis.get(id);
 
@@ -72,34 +72,40 @@ class AutomovelRepository {
       return false;
     }
 
+    // Remover dos índices
+    this.placaIndex.delete(automovel.placa.toLowerCase());
     this.automoveis.delete(id);
     return true;
   }
 
-  // Verificar se placa já existe
   placaExiste(placa, idExcluir = null) {
-    for (const [id, automovel] of this.automoveis) {
-      if (idExcluir && id === idExcluir) continue;
-      if (automovel.placa === placa) {
-        return true;
-      }
+    const placaLower = placa.toLowerCase();
+    const idEncontrado = this.placaIndex.get(placaLower);
+
+    if (!idEncontrado) {
+      return false;
     }
-    return false;
+
+    if (idExcluir && idEncontrado === idExcluir) {
+      return false;
+    }
+
+    return true;
   }
 
-  // Buscar por placa
   buscarPorPlaca(placa) {
-    for (const automovel of this.automoveis.values()) {
-      if (automovel.placa === placa) {
-        return automovel.toJSON();
-      }
+    const id = this.placaIndex.get(placa.toLowerCase());
+    if (!id) {
+      return null;
     }
-    return null;
+
+    const automovel = this.automoveis.get(id);
+    return automovel ? automovel.toJSON() : null;
   }
 
-  // Limpar todos os dados (apenas para testes)
   limpar() {
     this.automoveis.clear();
+    this.placaIndex.clear();
     this.nextId = 1;
   }
 }

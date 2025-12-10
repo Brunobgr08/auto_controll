@@ -4,14 +4,14 @@ class UtilizacaoRepository {
   constructor() {
     this.utilizacoes = new Map();
     this.nextId = 1;
+    this.automovelEmUsoIndex = new Map(); // automovelId -> utilizacaoId (apenas ativas)
+    this.motoristaEmUsoIndex = new Map(); // motoristaId -> utilizacaoId (apenas ativas)
   }
 
-  // Gerar ID único
   generateId() {
     return (this.nextId++).toString();
   }
 
-  // Criar uma nova utilização
   criar(utilizacaoData) {
     const id = this.generateId();
     const utilizacao = new Utilizacao({
@@ -20,16 +20,21 @@ class UtilizacaoRepository {
     });
 
     this.utilizacoes.set(id, utilizacao);
+
+    // Atualizar índices de uso
+    if (utilizacao.estaAtiva()) {
+      this.automovelEmUsoIndex.set(utilizacao.automovelId, id);
+      this.motoristaEmUsoIndex.set(utilizacao.motoristaId, id);
+    }
+
     return utilizacao.toJSON();
   }
 
-  // Buscar utilização por ID
   buscarPorId(id) {
     const utilizacao = this.utilizacoes.get(id);
     return utilizacao ? utilizacao.toJSON() : null;
   }
 
-  // Buscar utilização por ID com detalhes completos
   buscarPorIdCompleto(id, automovelRepository, motoristaRepository) {
     const utilizacao = this.utilizacoes.get(id);
     if (!utilizacao) return null;
@@ -40,7 +45,6 @@ class UtilizacaoRepository {
     return utilizacao.toJSONCompleto(automovel, motorista);
   }
 
-  // Listar todas as utilizações
   listar(filtros = {}) {
     let utilizacoesArray = Array.from(this.utilizacoes.values()).map(
       (utilizacao) => utilizacao.toJSON()
@@ -56,7 +60,6 @@ class UtilizacaoRepository {
     return utilizacoesArray;
   }
 
-  // Listar utilizações com detalhes completos
   listarCompleto(automovelRepository, motoristaRepository, filtros = {}) {
     let utilizacoesArray = Array.from(this.utilizacoes.values());
 
@@ -74,7 +77,6 @@ class UtilizacaoRepository {
     });
   }
 
-  // Finalizar utilização
   finalizar(id, dataTermino = null) {
     const utilizacao = this.utilizacoes.get(id);
 
@@ -82,11 +84,16 @@ class UtilizacaoRepository {
       return null;
     }
 
+    // Remover dos índices de uso
+    if (utilizacao.estaAtiva()) {
+      this.automovelEmUsoIndex.delete(utilizacao.automovelId);
+      this.motoristaEmUsoIndex.delete(utilizacao.motoristaId);
+    }
+
     utilizacao.finalizar(dataTermino);
     return utilizacao.toJSON();
   }
 
-  // Excluir utilização
   excluir(id) {
     const utilizacao = this.utilizacoes.get(id);
 
@@ -94,39 +101,40 @@ class UtilizacaoRepository {
       return false;
     }
 
+    // Remover dos índices de uso
+    if (utilizacao.estaAtiva()) {
+      this.automovelEmUsoIndex.delete(utilizacao.automovelId);
+      this.motoristaEmUsoIndex.delete(utilizacao.motoristaId);
+    }
+
     this.utilizacoes.delete(id);
     return true;
   }
 
-  // Verificar se automóvel está em uso
+  // Consultas otimizadas usando índices
   automovelEstaEmUso(automovelId) {
-    for (const utilizacao of this.utilizacoes.values()) {
-      if (utilizacao.automovelId === automovelId && utilizacao.estaAtiva()) {
-        return utilizacao.toJSON();
-      }
-    }
-    return null;
+    const utilizacaoId = this.automovelEmUsoIndex.get(automovelId);
+    if (!utilizacaoId) return null;
+
+    const utilizacao = this.utilizacoes.get(utilizacaoId);
+    return utilizacao ? utilizacao.toJSON() : null;
   }
 
-  // Verificar se motorista está utilizando algum automóvel
   motoristaEstaEmUso(motoristaId) {
-    for (const utilizacao of this.utilizacoes.values()) {
-      if (utilizacao.motoristaId === motoristaId && utilizacao.estaAtiva()) {
-        return utilizacao.toJSON();
-      }
-    }
-    return null;
+    const utilizacaoId = this.motoristaEmUsoIndex.get(motoristaId);
+    if (!utilizacaoId) return null;
+
+    const utilizacao = this.utilizacoes.get(utilizacaoId);
+    return utilizacao ? utilizacao.toJSON() : null;
   }
 
-  // Verificar se existe utilização ativa para automóvel ou motorista
   existeUtilizacaoAtiva(automovelId, motoristaId) {
     return (
-      !!this.automovelEstaEmUso(automovelId) ||
-      !!this.motoristaEstaEmUso(motoristaId)
+      !!this.automovelEmUsoIndex.get(automovelId) ||
+      !!this.motoristaEmUsoIndex.get(motoristaId)
     );
   }
 
-  // Buscar utilizações por automóvel
   buscarPorAutomovel(automovelId) {
     const result = [];
     for (const utilizacao of this.utilizacoes.values()) {
@@ -137,7 +145,6 @@ class UtilizacaoRepository {
     return result;
   }
 
-  // Buscar utilizações por motorista
   buscarPorMotorista(motoristaId) {
     const result = [];
     for (const utilizacao of this.utilizacoes.values()) {
@@ -148,9 +155,10 @@ class UtilizacaoRepository {
     return result;
   }
 
-  // Limpar todos os dados (apenas para testes)
   limpar() {
     this.utilizacoes.clear();
+    this.automovelEmUsoIndex.clear();
+    this.motoristaEmUsoIndex.clear();
     this.nextId = 1;
   }
 }

@@ -1,6 +1,6 @@
 const { body, param, query } = require('express-validator');
+const { VALIDATION, LIMITS } = require('../constants/app');
 
-// Validações para criação
 const criarMotoristaValidation = [
   body('nome')
     .notEmpty()
@@ -8,20 +8,21 @@ const criarMotoristaValidation = [
     .isString()
     .withMessage('Nome deve ser uma string')
     .trim()
-    .isLength({ min: 3, max: 100 })
-    .withMessage('Nome deve ter entre 3 e 100 caracteres')
-    .matches(/^[a-zA-ZÀ-ÿ\s']+$/)
+    .isLength({ min: LIMITS.NOME_MIN, max: LIMITS.NOME_MAX })
+    .withMessage(
+      `Nome deve ter entre ${LIMITS.NOME_MIN} e ${LIMITS.NOME_MAX} caracteres`
+    )
+    .matches(VALIDATION.NOME_REGEX)
     .withMessage('Nome deve conter apenas letras e espaços'),
 ];
 
-// Validações para atualização
 const atualizarMotoristaValidation = [
   param('id')
     .notEmpty()
     .withMessage('ID é obrigatório')
     .isString()
     .withMessage('ID deve ser uma string')
-    .matches(/^\d+$/)
+    .matches(VALIDATION.ID_REGEX)
     .withMessage('ID deve conter apenas números'),
 
   body('nome')
@@ -29,24 +30,24 @@ const atualizarMotoristaValidation = [
     .isString()
     .withMessage('Nome deve ser uma string')
     .trim()
-    .isLength({ min: 3, max: 100 })
-    .withMessage('Nome deve ter entre 3 e 100 caracteres')
-    .matches(/^[a-zA-ZÀ-ÿ\s']+$/)
+    .isLength({ min: LIMITS.NOME_MIN, max: LIMITS.NOME_MAX })
+    .withMessage(
+      `Nome deve ter entre ${LIMITS.NOME_MIN} e ${LIMITS.NOME_MAX} caracteres`
+    )
+    .matches(VALIDATION.NOME_REGEX)
     .withMessage('Nome deve conter apenas letras e espaços'),
 ];
 
-// Validações para ID
 const idValidation = [
   param('id')
     .notEmpty()
     .withMessage('ID é obrigatório')
     .isString()
     .withMessage('ID deve ser uma string')
-    .matches(/^\d+$/)
+    .matches(VALIDATION.ID_REGEX)
     .withMessage('ID deve conter apenas números'),
 ];
 
-// Validações para listagem com filtros
 const listarMotoristasValidation = [
   query('nome')
     .optional()

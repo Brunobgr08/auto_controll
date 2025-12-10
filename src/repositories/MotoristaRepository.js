@@ -4,14 +4,13 @@ class MotoristaRepository {
   constructor() {
     this.motoristas = new Map();
     this.nextId = 1;
+    this.nomeIndex = new Map(); // Índice para busca rápida por nome (lowercase)
   }
 
-  // Gerar ID único
   generateId() {
     return (this.nextId++).toString();
   }
 
-  // Criar um novo motorista
   criar(motoristaData) {
     const id = this.generateId();
     const motorista = new Motorista({
@@ -20,22 +19,21 @@ class MotoristaRepository {
     });
 
     this.motoristas.set(id, motorista);
+    this.nomeIndex.set(motorista.nome.toLowerCase(), id);
     return motorista.toJSON();
   }
 
-  // Buscar motorista por ID
   buscarPorId(id) {
     const motorista = this.motoristas.get(id);
     return motorista ? motorista.toJSON() : null;
   }
 
-  // Listar todos os motoristas
   listar(filtros = {}) {
     let motoristasArray = Array.from(this.motoristas.values()).map(
       (motorista) => motorista.toJSON()
     );
 
-    // Aplicar filtro por nome
+    // Aplicar filtro por nome de forma eficiente
     if (filtros.nome) {
       const termoBusca = filtros.nome.toLowerCase();
       motoristasArray = motoristasArray.filter((motorista) =>
@@ -46,7 +44,6 @@ class MotoristaRepository {
     return motoristasArray;
   }
 
-  // Atualizar motorista
   atualizar(id, dadosAtualizacao) {
     const motorista = this.motoristas.get(id);
 
@@ -54,11 +51,16 @@ class MotoristaRepository {
       return null;
     }
 
+    // Atualizar índice de nome se necessário
+    if (dadosAtualizacao.nome && dadosAtualizacao.nome !== motorista.nome) {
+      this.nomeIndex.delete(motorista.nome.toLowerCase());
+      this.nomeIndex.set(dadosAtualizacao.nome.toLowerCase(), id);
+    }
+
     motorista.update(dadosAtualizacao);
     return motorista.toJSON();
   }
 
-  // Excluir motorista
   excluir(id) {
     const motorista = this.motoristas.get(id);
 
@@ -66,34 +68,40 @@ class MotoristaRepository {
       return false;
     }
 
+    // Remover dos índices
+    this.nomeIndex.delete(motorista.nome.toLowerCase());
     this.motoristas.delete(id);
     return true;
   }
 
-  // Verificar se motorista existe
   motoristaExiste(nome, idExcluir = null) {
-    for (const [id, motorista] of this.motoristas) {
-      if (idExcluir && id === idExcluir) continue;
-      if (motorista.nome.toLowerCase() === nome.toLowerCase()) {
-        return true;
-      }
+    const nomeLower = nome.toLowerCase();
+    const idEncontrado = this.nomeIndex.get(nomeLower);
+
+    if (!idEncontrado) {
+      return false;
     }
-    return false;
+
+    if (idExcluir && idEncontrado === idExcluir) {
+      return false;
+    }
+
+    return true;
   }
 
-  // Buscar por nome exato
   buscarPorNome(nome) {
-    for (const motorista of this.motoristas.values()) {
-      if (motorista.nome.toLowerCase() === nome.toLowerCase()) {
-        return motorista.toJSON();
-      }
+    const id = this.nomeIndex.get(nome.toLowerCase());
+    if (!id) {
+      return null;
     }
-    return null;
+
+    const motorista = this.motoristas.get(id);
+    return motorista ? motorista.toJSON() : null;
   }
 
-  // Limpar todos os dados (apenas para testes)
   limpar() {
     this.motoristas.clear();
+    this.nomeIndex.clear();
     this.nextId = 1;
   }
 }

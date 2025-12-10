@@ -163,7 +163,7 @@ describe('API de Motoristas', () => {
       expect(response.status).toBe(409);
       expect(response.body).toHaveProperty(
         'message',
-        'Já existe outro motorista com este nome'
+        'Já existe um motorista com este nome'
       );
     });
   });

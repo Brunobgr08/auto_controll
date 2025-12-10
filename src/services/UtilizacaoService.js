@@ -1,7 +1,8 @@
 const utilizacaoRepository = require('../repositories/UtilizacaoRepository');
 const automovelRepository = require('../repositories/AutomovelRepository');
 const motoristaRepository = require('../repositories/MotoristaRepository');
-const { AppError } = require('../middlewares/errorHandler');
+const { NotFoundError, ConflictError } = require('../middlewares/errorHandler');
+const { MESSAGES } = require('../constants/app');
 
 class UtilizacaoService {
   constructor() {
@@ -10,52 +11,49 @@ class UtilizacaoService {
     this.motoristaRepo = motoristaRepository;
   }
 
-  // Criar utilização
   async criar(utilizacaoData) {
-    // Verificar se automóvel existe
     const automovel = this.automovelRepo.buscarPorId(
       utilizacaoData.automovelId
     );
     if (!automovel) {
-      throw new AppError('Automóvel não encontrado', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.AUTOMOVEL, {
+        automovelId: utilizacaoData.automovelId,
+      });
     }
 
-    // Verificar se motorista existe
     const motorista = this.motoristaRepo.buscarPorId(
       utilizacaoData.motoristaId
     );
     if (!motorista) {
-      throw new AppError('Motorista não encontrado', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.MOTORISTA, {
+        motoristaId: utilizacaoData.motoristaId,
+      });
     }
 
-    // Verificar regras de negócio
-    if (
-      this.utilizacaoRepo.existeUtilizacaoAtiva(
-        utilizacaoData.automovelId,
-        utilizacaoData.motoristaId
-      )
-    ) {
-      // Verificar qual está em uso para dar mensagem mais específica
-      const automovelEmUso = this.utilizacaoRepo.automovelEstaEmUso(
-        utilizacaoData.automovelId
-      );
-      if (automovelEmUso) {
-        throw new AppError('Automóvel já está em uso', 409);
-      }
+    const automovelEmUso = this.utilizacaoRepo.automovelEstaEmUso(
+      utilizacaoData.automovelId
+    );
+    if (automovelEmUso) {
+      throw new ConflictError(MESSAGES.CONFLICT.AUTOMOVEL_EM_USO, {
+        utilizacaoId: automovelEmUso.id,
+        motoristaId: automovelEmUso.motoristaId,
+      });
+    }
 
-      const motoristaEmUso = this.utilizacaoRepo.motoristaEstaEmUso(
-        utilizacaoData.motoristaId
-      );
-      if (motoristaEmUso) {
-        throw new AppError('Motorista já está utilizando outro automóvel', 409);
-      }
+    const motoristaEmUso = this.utilizacaoRepo.motoristaEstaEmUso(
+      utilizacaoData.motoristaId
+    );
+    if (motoristaEmUso) {
+      throw new ConflictError(MESSAGES.CONFLICT.MOTORISTA_EM_USO, {
+        utilizacaoId: motoristaEmUso.id,
+        automovelId: motoristaEmUso.automovelId,
+      });
     }
 
     const utilizacao = this.utilizacaoRepo.criar(utilizacaoData);
     return utilizacao;
   }
 
-  // Buscar utilização por ID
   async buscarPorId(id) {
     const utilizacao = this.utilizacaoRepo.buscarPorIdCompleto(
       id,
@@ -64,13 +62,12 @@ class UtilizacaoService {
     );
 
     if (!utilizacao) {
-      throw new AppError('Utilização não encontrada', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.UTILIZACAO, { id });
     }
 
     return utilizacao;
   }
 
-  // Listar utilizações
   async listar(filtros = {}) {
     return this.utilizacaoRepo.listarCompleto(
       this.automovelRepo,
@@ -79,21 +76,21 @@ class UtilizacaoService {
     );
   }
 
-  // Finalizar utilização
   async finalizar(id, dataTermino) {
     const utilizacao = this.utilizacaoRepo.buscarPorId(id);
 
     if (!utilizacao) {
-      throw new AppError('Utilização não encontrada', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.UTILIZACAO, { id });
     }
 
     if (utilizacao.dataTermino) {
-      throw new AppError('Utilização já foi finalizada', 400);
+      throw new ConflictError(MESSAGES.CONFLICT.UTILIZACAO_FINALIZADA, {
+        dataTermino: utilizacao.dataTermino,
+      });
     }
 
-    const utilizacaoFinalizada = this.utilizacaoRepo.finalizar(id, dataTermino);
+    this.utilizacaoRepo.finalizar(id, dataTermino);
 
-    // Retornar com dados completos
     return this.utilizacaoRepo.buscarPorIdCompleto(
       id,
       this.automovelRepo,
@@ -101,58 +98,53 @@ class UtilizacaoService {
     );
   }
 
-  // Excluir utilização
   async excluir(id) {
-    // Verificar se a utilização existe
     const utilizacao = this.utilizacaoRepo.buscarPorId(id);
     if (!utilizacao) {
-      throw new AppError('Utilização não encontrada', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.UTILIZACAO, { id });
     }
 
-    // Verificar se a utilização está ativa
     if (!utilizacao.dataTermino) {
-      throw new AppError(
-        'Não é possível excluir uma utilização ativa. Finalize-a primeiro.',
-        409
-      );
+      throw new ConflictError(MESSAGES.CONFLICT.UTILIZACAO_ATIVA);
     }
 
     const excluido = this.utilizacaoRepo.excluir(id);
 
     if (!excluido) {
-      throw new AppError('Utilização não encontrada', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.UTILIZACAO, { id });
     }
 
-    return { message: 'Utilização excluída com sucesso' };
+    return {
+      message: 'Utilização excluída com sucesso',
+      id,
+    };
   }
 
-  // Verificar se automóvel está em uso
   async automovelEstaEmUso(automovelId) {
-    // Verificar se automóvel existe
     const automovel = this.automovelRepo.buscarPorId(automovelId);
     if (!automovel) {
-      throw new AppError('Automóvel não encontrado', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.AUTOMOVEL, { automovelId });
     }
 
     const utilizacao = this.utilizacaoRepo.automovelEstaEmUso(automovelId);
     return {
       emUso: !!utilizacao,
       utilizacao: utilizacao || null,
+      automovel,
     };
   }
 
-  // Verificar se motorista está em uso
   async motoristaEstaEmUso(motoristaId) {
-    // Verificar se motorista existe
     const motorista = this.motoristaRepo.buscarPorId(motoristaId);
     if (!motorista) {
-      throw new AppError('Motorista não encontrado', 404);
+      throw new NotFoundError(MESSAGES.NOT_FOUND.MOTORISTA, { motoristaId });
     }
 
     const utilizacao = this.utilizacaoRepo.motoristaEstaEmUso(motoristaId);
     return {
       emUso: !!utilizacao,
       utilizacao: utilizacao || null,
+      motorista,
     };
   }
 }
