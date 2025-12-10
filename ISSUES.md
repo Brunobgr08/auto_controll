@@ -97,9 +97,9 @@
 
 #### Issue #13: Testes de integração
 
-- [ ] Testar fluxos completos de uso
-- [ ] Testar cenários de erro de integração
-- [ ] Testar filtros combinados
+- [x] Testar fluxos completos de uso
+- [x] Testar cenários de erro de integração
+- [x] Testar filtros combinados
 
 ### Fase 6: Documentação e Finalização
 
